@@ -25,16 +25,16 @@ class MultinomialNB_class:
 		* class_log_prior[0] = Math.log(ham)
 		* class_log_prior[1] = Math.log(spam)
 		'''
-        ham = 0
-        spam = 0
+        hamCount = 0
+        spamCount = 0
         for i in range(len(labels)):
             if labels[i] == 1:
-                ham += 1
+                hamCount += 1
             else:
-                spam += 1
+                spamCount += 1
 
-        class_log_prior[0] = math.log(ham)
-        class_log_prior[1] = math.log(spam)
+        class_log_prior[HAM] = math.log(hamCount)
+        class_log_prior[SPAM] = math.log(spamCount)
 
         '''
 		//calculate feature_log_prob
@@ -58,24 +58,27 @@ class MultinomialNB_class:
 		 */'''
         hamSum = 0;
         spamSum = 0;
+        ham = np.zeros(most_common_word)
+        spam = np.zeros(most_common_word)
+
         for row in range(len(features)):
             for col in range(most_common_word):
-                if row <= ham:
-                    feature_log_prob[HAM][col] += features[row][col]
-                    hamSum += feature_log_prob[HAM][col]
+                if row <= hamCount:
+                    ham[col] += features[row][col]
+                    hamSum += features[row][col]
                 else:
-                    feature_log_prob[SPAM][col] += features[row][col]
-                    spamSum += feature_log_prob[SPAM][col]
+                    spam[col] += features[row][col]
+                    spamSum += features[row][col]
         for i in range(most_common_word):
-            feature_log_prob[0][i] += smooth_alpha
-            feature_log_prob[1][i] += smooth_alpha
+            spam[i] += smooth_alpha
+            ham[i] += smooth_alpha
         hamSum += most_common_word*smooth_alpha
         spamSum += most_common_word*smooth_alpha
 
 
         for j in range(most_common_word):
-            feature_log_prob[0][j] = math.log(feature_log_prob[0][j]/hamSum)
-            feature_log_prob[1][j] = math.log(feature_log_prob[1][j]/spamSum)
+            feature_log_prob[HAM][j] = math.log(ham[j]/hamSum)
+            feature_log_prob[SPAM][j] = math.log(spam[j]/spamSum)
 
 
 
